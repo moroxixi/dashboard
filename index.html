@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans">
+
+    <header class="bg-white shadow-sm py-8 mb-10">
+        <div class="max-w-6xl mx-auto px-4">
+            <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
+            <p class="text-gray-500 mt-2">Kumpulan aplikasi web dan portofolio pengembangan.</p>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 pb-20">
+        <div class="mb-8 flex flex-col md:flex-row gap-4">
+            <input type="text" id="searchBar" placeholder="Cari aplikasi..." 
+                   class="w-full md:w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+        </div>
+
+        <div id="appGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="col-span-full text-center py-20 text-gray-400">
+                <p>Mengambil data dari database...</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // GANTI INI dengan URL Web App GAS yang kamu deploy tadi
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbzsAS9osPjFm9bZ-zuux0C89nI2kCE2beC0ZpK2hNbHPBW7T_1VTCjvJuKlpvfE-91Y/exec";
+
+        async function fetchProjects() {
+            try {
+                const response = await fetch(GAS_URL);
+                const data = await response.json();
+                renderProjects(data);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                document.getElementById('appGrid').innerHTML = `
+                    <div class="col-span-full text-center text-red-500">
+                        Gagal memuat data. Pastikan URL API sudah benar.
+                    </div>`;
+            }
+        }
+
+        function renderProjects(projects) {
+            const grid = document.getElementById('appGrid');
+            grid.innerHTML = ""; // Bersihkan loading state
+
+            projects.forEach(project => {
+                const card = document.createElement('div');
+                card.className = "bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer flex flex-col justify-between group";
+                
+                // Menangani klik pada seluruh area kartu
+                card.onclick = () => window.open(project.url, '_blank');
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="p-3 bg-blue-50 text-blue-600 rounded-lg group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                                <i data-lucide="external-link" class="w-6 h-6"></i>
+                            </div>
+                            <span class="text-xs font-semibold px-2 py-1 bg-gray-100 text-gray-600 rounded uppercase tracking-wider">
+                                ${project.category || ''}
+                            </span>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">${project.title}</h3>
+						<p class="text-gray-500 text-sm mb-4">${project.description}</p>
+                    </div>
+                    <div class="flex items-center text-blue-600 font-medium text-sm">
+                        Buka Aplikasi <i data-lucide="chevron-right" class="ml-1 w-4 h-4"></i>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            // Re-render icons
+            lucide.createIcons();
+        }
+
+        // Jalankan fetch saat halaman dimuat
+        fetchProjects();
+
+        // Fitur Pencarian Sederhana
+        document.getElementById('searchBar').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('#appGrid > div');
+            cards.forEach(card => {
+                const title = card.querySelector('h3')?.innerText.toLowerCase() || "";
+                card.style.display = title.includes(searchTerm) ? "flex" : "none";
+            });
+        });
+    </script>
+</body>
+</html>
