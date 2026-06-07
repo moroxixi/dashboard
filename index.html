@@ -1,164 +1,169 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        /* Animasi transisi sidebar */
-        #sidebar { transition: transform 0.3s ease-in-out; }
-        .sidebar-open { transform: translateX(0); }
-        .sidebar-closed { transform: translateX(-100%); }
-    </style>
-</head>
-<body class="bg-gray-50 min-h-screen font-sans overflow-x-hidden">
 
-    <!-- Tombol Hamburger (Fixed) -->
-    <button id="menuBtn" class="fixed top-6 left-6 z-50 p-2 bg-white rounded-lg shadow-md hover:bg-gray-100">
-        <i data-lucide="menu" class="w-6 h-6 text-gray-700"></i>
-    </button>
-
-    <!-- Overlay Sidebar -->
-    <div id="overlay" class="fixed inset-0 bg-black/30 z-40 hidden"></div>
-
-    <!-- Sidebar Section -->
-    <aside id="sidebar" class="fixed top-0 left-0 h-full w-72 bg-white z-50 shadow-2xl sidebar-closed border-r border-gray-100">
-        <div class="p-6">
-            <div class="flex items-center justify-between mb-8">
-                <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
-                    <i data-lucide="bookmark" class="w-5 h-5 text-blue-600"></i> Bookmarks
-                </h2>
-                <button id="closeBtn" class="p-1 hover:bg-gray-100 rounded">
-                    <i data-lucide="x" class="w-5 h-5 text-gray-500"></i>
-                </button>
-            </div>
-            
-            <!-- Tempat List Bookmark -->
-            <nav id="bookmarkList" class="space-y-2 overflow-y-auto max-h-[80vh]">
-                <p class="text-sm text-gray-400">Loading bookmarks...</p>
-            </nav>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@300;400;600&display=swap');
+  .tn-root{background:#1a1b2e;min-height:600px;font-family:'Space Grotesk',sans-serif;color:#c0caf5;padding:0;position:relative;overflow:hidden}
+  .tn-scanlines{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.08) 2px,rgba(0,0,0,0.08) 4px);pointer-events:none;z-index:0}
+  .tn-bar{background:#16172a;border-bottom:1px solid #292e42;padding:8px 16px;display:flex;align-items:center;gap:12px;position:relative;z-index:2}
+  .tn-dot{width:10px;height:10px;border-radius:50%}
+  .tn-dot.r{background:#f7768e}
+  .tn-dot.y{background:#e0af68}
+  .tn-dot.g{background:#9ece6a}
+  .tn-bar-title{font-family:'JetBrains Mono',monospace;font-size:12px;color:#565f89;margin-left:8px;flex:1}
+  .tn-bar-time{font-family:'JetBrains Mono',monospace;font-size:11px;color:#7aa2f7}
+  .tn-body{display:flex;min-height:560px;position:relative;z-index:1}
+  .tn-sidebar{width:220px;background:#16172a;border-right:1px solid #292e42;padding:16px 0;flex-shrink:0}
+  .tn-sidebar-header{padding:8px 16px 16px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#565f89;letter-spacing:2px;text-transform:uppercase}
+  .tn-bm-item{display:flex;align-items:center;gap:8px;padding:8px 16px;font-size:13px;color:#a9b1d6;cursor:pointer;border-left:2px solid transparent;transition:all 0.15s}
+  .tn-bm-item:hover{background:rgba(122,162,247,0.08);color:#7aa2f7;border-left-color:#7aa2f7}
+  .tn-bm-dot{width:5px;height:5px;border-radius:50%;background:#565f89;flex-shrink:0}
+  .tn-bm-item:hover .tn-bm-dot{background:#7aa2f7}
+  .tn-sidebar-sep{height:1px;background:#292e42;margin:12px 16px}
+  .tn-main{flex:1;padding:20px;overflow:auto}
+  .tn-topbar{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+  .tn-prompt{font-family:'JetBrains Mono',monospace;font-size:12px;color:#9ece6a;margin-right:4px}
+  .tn-search{flex:1;max-width:320px;background:#16172a;border:1px solid #292e42;border-radius:6px;padding:8px 12px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#c0caf5;outline:none;transition:border-color 0.2s}
+  .tn-search:focus{border-color:#7aa2f7}
+  .tn-search::placeholder{color:#565f89}
+  .tn-section-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:#565f89;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+  .tn-section-label::after{content:'';flex:1;height:1px;background:#292e42}
+  .tn-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+  .tn-card{background:#16172a;border:1px solid #292e42;border-radius:8px;padding:16px;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden}
+  .tn-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:transparent;transition:background 0.2s}
+  .tn-card:hover{border-color:#7aa2f7;transform:translateY(-2px)}
+  .tn-card:hover::before{background:#7aa2f7}
+  .tn-card.cat-a:hover::before{background:#bb9af7}
+  .tn-card.cat-b:hover::before{background:#73daca}
+  .tn-card.cat-c:hover::before{background:#f7768e}
+  .tn-card.cat-d:hover::before{background:#e0af68}
+  .tn-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .tn-card-icon{width:28px;height:28px;border-radius:5px;background:rgba(122,162,247,0.15);display:flex;align-items:center;justify-content:center;font-size:14px;color:#7aa2f7}
+  .tn-card.cat-a .tn-card-icon{background:rgba(187,154,247,0.15);color:#bb9af7}
+  .tn-card.cat-b .tn-card-icon{background:rgba(115,218,202,0.15);color:#73daca}
+  .tn-card.cat-c .tn-card-icon{background:rgba(247,118,142,0.15);color:#f7768e}
+  .tn-card.cat-d .tn-card-icon{background:rgba(224,175,104,0.15);color:#e0af68}
+  .tn-badge{font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 6px;border-radius:3px;background:#1e2030;color:#565f89;border:1px solid #292e42;letter-spacing:1px;text-transform:uppercase}
+  .tn-card-title{font-size:13px;font-weight:600;color:#c0caf5;margin:0 0 5px}
+  .tn-card-desc{font-size:11px;color:#565f89;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .tn-card-footer{margin-top:12px;display:flex;align-items:center;gap:4px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#565f89;transition:color 0.2s}
+  .tn-card:hover .tn-card-footer{color:#7aa2f7}
+  .tn-card.cat-a:hover .tn-card-footer{color:#bb9af7}
+  .tn-card.cat-b:hover .tn-card-footer{color:#73daca}
+  .tn-card.cat-c:hover .tn-card-footer{color:#f7768e}
+  .tn-loading{font-family:'JetBrains Mono',monospace;font-size:12px;color:#565f89;padding:40px 0;text-align:center}
+  .tn-cursor{display:inline-block;width:8px;height:14px;background:#7aa2f7;animation:blink 1s step-end infinite;vertical-align:middle;margin-left:2px}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+  .tn-statusbar{background:#7aa2f7;padding:2px 12px;display:flex;align-items:center;gap:12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#1a1b2e;position:relative;z-index:2}
+  .tn-statusbar-seg{padding:2px 8px;background:rgba(0,0,0,0.15);border-radius:2px}
+  .tn-statusbar-sep{opacity:0.4}
+  .tn-sb-right{margin-left:auto;display:flex;gap:8px}
+</style>
+<div class="tn-root">
+  <div class="tn-scanlines"></div>
+  <div class="tn-bar">
+    <div class="tn-dot r"></div><div class="tn-dot y"></div><div class="tn-dot g"></div>
+    <span class="tn-bar-title">rofi@arch  ~/dashboard  [hyprland]</span>
+    <span class="tn-bar-time" id="tn-clock">00:00</span>
+  </div>
+  <div class="tn-body">
+    <div class="tn-sidebar">
+      <div class="tn-sidebar-header">bookmarks</div>
+      <div id="tn-bm-list"><div class="tn-bm-item"><div class="tn-bm-dot"></div><span style="color:#565f89;font-family:'JetBrains Mono',monospace;font-size:11px">loading...</span></div></div>
+      <div class="tn-sidebar-sep"></div>
+      <div style="padding:8px 16px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#565f89;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px">workspace</div>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#9ece6a;padding:4px 8px;background:rgba(158,206,106,0.08);border-radius:4px;border-left:2px solid #9ece6a">1 : dashboard</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#565f89;padding:4px 8px;border-radius:4px;border-left:2px solid transparent">2 : terminal</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#565f89;padding:4px 8px;border-radius:4px;border-left:2px solid transparent">3 : browser</div>
         </div>
-    </aside>
+      </div>
+    </div>
+    <div class="tn-main">
+      <div class="tn-topbar">
+        <span class="tn-prompt">❯</span>
+        <input class="tn-search" id="tn-search" placeholder="search apps..." />
+      </div>
+      <div class="tn-section-label">projects</div>
+      <div class="tn-grid" id="tn-grid">
+        <div class="tn-loading">fetching nodes<span class="tn-cursor"></span></div>
+      </div>
+    </div>
+  </div>
+  <div class="tn-statusbar">
+    <span class="tn-statusbar-seg">NORMAL</span>
+    <span class="tn-statusbar-sep">|</span>
+    <span>dashboard.html</span>
+    <span class="tn-statusbar-sep">|</span>
+    <span id="tn-count">0 apps</span>
+    <div class="tn-sb-right">
+      <span>Tokyo Night</span>
+      <span class="tn-statusbar-sep">|</span>
+      <span>UTF-8</span>
+    </div>
+  </div>
+</div>
+<script>
+const GAS_URL = "https://script.google.com/macros/s/AKfycbyDNzy0wf5MxcafkRuAW1icXq5oKdUPMM9Lfxy_U5CsGtQ7luBPZcdYss4ItWXrQBNE/exec";
+const catMap = ['','cat-a','cat-b','cat-c','cat-d'];
+const icons = ['<i class="ti ti-external-link"></i>','<i class="ti ti-box"></i>','<i class="ti ti-chart-bar"></i>','<i class="ti ti-device-mobile"></i>','<i class="ti ti-terminal"></i>'];
+let allProjects = [];
 
-    <!-- Main Content -->
-    <header class="bg-white shadow-sm py-8 mb-10 pl-20">
-        <div class="max-w-6xl mx-auto px-4">
-            <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
-            <p class="text-gray-500 mt-2">Kumpulan aplikasi web dan portofolio pengembangan.</p>
-        </div>
-    </header>
+function updateClock(){
+  const d = new Date();
+  document.getElementById('tn-clock').textContent = d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+}
+setInterval(updateClock,1000);updateClock();
 
-    <main class="max-w-6xl mx-auto px-4 pb-20 pl-4 md:pl-20">
-        <div class="mb-8 flex flex-col md:flex-row gap-4">
-            <input type="text" id="searchBar" placeholder="Cari aplikasi..." 
-                   class="w-full md:w-1/2 lg:w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
-        </div>
+async function fetchData(){
+  try{
+    const r = await fetch(GAS_URL);
+    const d = await r.json();
+    allProjects = d.projects||[];
+    renderProjects(allProjects);
+    renderBookmarks(d.bookmarks||[]);
+  }catch(e){
+    document.getElementById('tn-grid').innerHTML='<div class="tn-loading" style="color:#f7768e">Error: connection refused</div>';
+  }
+}
 
-        <div id="appGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div class="col-span-full text-center py-20 text-gray-400">
-                <p>Mengambil data dari database...</p>
-            </div>
-        </div>
-    </main>
+function catIndex(cat,i){
+  if(!cat) return (i%4)+1;
+  const cats=['automation','dashboard','mobile','system','web'];
+  const idx = cats.findIndex(c=>cat.toLowerCase().includes(c));
+  return idx>=0?idx+1:(i%4)+1;
+}
 
-    <script>
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbyDNzy0wf5MxcafkRuAW1icXq5oKdUPMM9Lfxy_U5CsGtQ7luBPZcdYss4ItWXrQBNE/exec";
+function renderProjects(projects){
+  const grid = document.getElementById('tn-grid');
+  if(!projects.length){grid.innerHTML='<div class="tn-loading">no results found</div>';return;}
+  document.getElementById('tn-count').textContent = projects.length+' apps';
+  grid.innerHTML = projects.map((p,i)=>{
+    const ci = catIndex(p.category,i);
+    const ic = icons[ci-1]||icons[0];
+    return `<div class="tn-card cat-${['','a','b','c','d'][ci]}" onclick="window.open('${p.url}','_blank')">
+      <div class="tn-card-top">
+        <div class="tn-card-icon">${ic}</div>
+        <span class="tn-badge">${p.category||'misc'}</span>
+      </div>
+      <div class="tn-card-title">${p.title}</div>
+      <div class="tn-card-desc">${p.description||'—'}</div>
+      <div class="tn-card-footer"><i class="ti ti-terminal-2" style="font-size:12px"></i>&nbsp;open&nbsp;→</div>
+    </div>`;
+  }).join('');
+  if(window.lucide) lucide.createIcons();
+}
 
-        // Logic Sidebar Toggle
-        const menuBtn = document.getElementById('menuBtn');
-        const closeBtn = document.getElementById('closeBtn');
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('overlay');
+function renderBookmarks(bms){
+  const list = document.getElementById('tn-bm-list');
+  if(!bms.length){list.innerHTML='<div class="tn-bm-item"><div class="tn-bm-dot"></div><span style="color:#565f89;font-size:11px;font-family:JetBrains Mono,monospace">empty</span></div>';return;}
+  list.innerHTML = bms.map(bm=>`<a href="${bm.url}" target="_blank" style="text-decoration:none"><div class="tn-bm-item"><div class="tn-bm-dot"></div><span style="font-size:12px">${bm.title}</span></div></a>`).join('');
+}
 
-        function toggleSidebar() {
-            sidebar.classList.toggle('sidebar-closed');
-            sidebar.classList.toggle('sidebar-open');
-            overlay.classList.toggle('hidden');
-        }
+document.getElementById('tn-search').addEventListener('input',e=>{
+  const q = e.target.value.toLowerCase();
+  const filtered = allProjects.filter(p=>p.title.toLowerCase().includes(q)||(p.description||'').toLowerCase().includes(q));
+  renderProjects(filtered);
+});
 
-        menuBtn.onclick = toggleSidebar;
-        closeBtn.onclick = toggleSidebar;
-        overlay.onclick = toggleSidebar;
-
-        async function fetchData() {
-            try {
-                const response = await fetch(GAS_URL);
-                const data = await response.json();
-                renderProjects(data.projects);
-                renderBookmarks(data.bookmarks);
-            } catch (error) {
-                console.error("Error:", error);
-                document.getElementById('appGrid').innerHTML = `<div class="col-span-full text-center text-red-500">Gagal memuat data.</div>`;
-            }
-        }
-
-        function renderProjects(projects) {
-            const grid = document.getElementById('appGrid');
-            grid.innerHTML = ""; 
-
-            projects.forEach(project => {
-                const card = document.createElement('div');
-                card.className = "bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer flex flex-col justify-between group";
-                card.onclick = () => window.open(project.url, '_blank');
-
-                card.innerHTML = `
-                    <div>
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="p-3 bg-blue-50 text-blue-600 rounded-lg group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                                <i data-lucide="external-link" class="w-6 h-6"></i>
-                            </div>
-                            <span class="text-[10px] font-bold px-2 py-1 bg-gray-100 text-gray-600 rounded uppercase tracking-tighter">
-                                ${project.category || 'General'}
-                            </span>
-                        </div>
-                        <h3 class="text-xl font-bold text-gray-800 mb-2">${project.title}</h3>
-                        <p class="text-gray-500 text-sm mb-4 line-clamp-2">${project.description || ''}</p>
-                    </div>
-                    <div class="flex items-center text-blue-600 font-medium text-sm">
-                        Buka Aplikasi <i data-lucide="chevron-right" class="ml-1 w-4 h-4"></i>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
-            lucide.createIcons();
-        }
-
-        function renderBookmarks(bookmarks) {
-            const list = document.getElementById('bookmarkList');
-            list.innerHTML = "";
-
-            if (bookmarks.length === 0) {
-                list.innerHTML = `<p class="text-xs text-gray-400">Belum ada bookmark.</p>`;
-                return;
-            }
-
-            bookmarks.forEach(bm => {
-                const a = document.createElement('a');
-                a.href = bm.url;
-                a.target = "_blank";
-                a.className = "flex items-center gap-3 p-3 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-all border border-transparent hover:border-blue-100";
-                a.innerHTML = `
-                    <i data-lucide="link-2" class="w-4 h-4"></i>
-                    <span class="truncate font-medium">${bm.title}</span>
-                `;
-                list.appendChild(a);
-            });
-            lucide.createIcons();
-        }
-
-        fetchData();
-
-        // Pencarian (Hanya di Grid Project)
-        document.getElementById('searchBar').addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            const cards = document.querySelectorAll('#appGrid > div');
-            cards.forEach(card => {
-                const title = card.querySelector('h3')?.innerText.toLowerCase() || "";
-                card.style.display = title.includes(searchTerm) ? "flex" : "none";
-            });
-        });
-    </script>
-</body>
-</html>
+fetchData();
+</script>
