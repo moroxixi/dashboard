@@ -1,169 +1,211 @@
 
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@300;400;600&display=swap');
-  .tn-root{background:#1a1b2e;min-height:600px;font-family:'Space Grotesk',sans-serif;color:#c0caf5;padding:0;position:relative;overflow:hidden}
-  .tn-scanlines{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.08) 2px,rgba(0,0,0,0.08) 4px);pointer-events:none;z-index:0}
-  .tn-bar{background:#16172a;border-bottom:1px solid #292e42;padding:8px 16px;display:flex;align-items:center;gap:12px;position:relative;z-index:2}
-  .tn-dot{width:10px;height:10px;border-radius:50%}
-  .tn-dot.r{background:#f7768e}
-  .tn-dot.y{background:#e0af68}
-  .tn-dot.g{background:#9ece6a}
-  .tn-bar-title{font-family:'JetBrains Mono',monospace;font-size:12px;color:#565f89;margin-left:8px;flex:1}
-  .tn-bar-time{font-family:'JetBrains Mono',monospace;font-size:11px;color:#7aa2f7}
-  .tn-body{display:flex;min-height:560px;position:relative;z-index:1}
-  .tn-sidebar{width:220px;background:#16172a;border-right:1px solid #292e42;padding:16px 0;flex-shrink:0}
-  .tn-sidebar-header{padding:8px 16px 16px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#565f89;letter-spacing:2px;text-transform:uppercase}
-  .tn-bm-item{display:flex;align-items:center;gap:8px;padding:8px 16px;font-size:13px;color:#a9b1d6;cursor:pointer;border-left:2px solid transparent;transition:all 0.15s}
-  .tn-bm-item:hover{background:rgba(122,162,247,0.08);color:#7aa2f7;border-left-color:#7aa2f7}
-  .tn-bm-dot{width:5px;height:5px;border-radius:50%;background:#565f89;flex-shrink:0}
-  .tn-bm-item:hover .tn-bm-dot{background:#7aa2f7}
-  .tn-sidebar-sep{height:1px;background:#292e42;margin:12px 16px}
-  .tn-main{flex:1;padding:20px;overflow:auto}
-  .tn-topbar{display:flex;align-items:center;gap:12px;margin-bottom:20px}
-  .tn-prompt{font-family:'JetBrains Mono',monospace;font-size:12px;color:#9ece6a;margin-right:4px}
-  .tn-search{flex:1;max-width:320px;background:#16172a;border:1px solid #292e42;border-radius:6px;padding:8px 12px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#c0caf5;outline:none;transition:border-color 0.2s}
-  .tn-search:focus{border-color:#7aa2f7}
-  .tn-search::placeholder{color:#565f89}
-  .tn-section-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:#565f89;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px}
-  .tn-section-label::after{content:'';flex:1;height:1px;background:#292e42}
-  .tn-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
-  .tn-card{background:#16172a;border:1px solid #292e42;border-radius:8px;padding:16px;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden}
-  .tn-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:transparent;transition:background 0.2s}
-  .tn-card:hover{border-color:#7aa2f7;transform:translateY(-2px)}
-  .tn-card:hover::before{background:#7aa2f7}
-  .tn-card.cat-a:hover::before{background:#bb9af7}
-  .tn-card.cat-b:hover::before{background:#73daca}
-  .tn-card.cat-c:hover::before{background:#f7768e}
-  .tn-card.cat-d:hover::before{background:#e0af68}
-  .tn-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-  .tn-card-icon{width:28px;height:28px;border-radius:5px;background:rgba(122,162,247,0.15);display:flex;align-items:center;justify-content:center;font-size:14px;color:#7aa2f7}
-  .tn-card.cat-a .tn-card-icon{background:rgba(187,154,247,0.15);color:#bb9af7}
-  .tn-card.cat-b .tn-card-icon{background:rgba(115,218,202,0.15);color:#73daca}
-  .tn-card.cat-c .tn-card-icon{background:rgba(247,118,142,0.15);color:#f7768e}
-  .tn-card.cat-d .tn-card-icon{background:rgba(224,175,104,0.15);color:#e0af68}
-  .tn-badge{font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 6px;border-radius:3px;background:#1e2030;color:#565f89;border:1px solid #292e42;letter-spacing:1px;text-transform:uppercase}
-  .tn-card-title{font-size:13px;font-weight:600;color:#c0caf5;margin:0 0 5px}
-  .tn-card-desc{font-size:11px;color:#565f89;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-  .tn-card-footer{margin-top:12px;display:flex;align-items:center;gap:4px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#565f89;transition:color 0.2s}
-  .tn-card:hover .tn-card-footer{color:#7aa2f7}
-  .tn-card.cat-a:hover .tn-card-footer{color:#bb9af7}
-  .tn-card.cat-b:hover .tn-card-footer{color:#73daca}
-  .tn-card.cat-c:hover .tn-card-footer{color:#f7768e}
-  .tn-loading{font-family:'JetBrains Mono',monospace;font-size:12px;color:#565f89;padding:40px 0;text-align:center}
-  .tn-cursor{display:inline-block;width:8px;height:14px;background:#7aa2f7;animation:blink 1s step-end infinite;vertical-align:middle;margin-left:2px}
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;600;700&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  .tn{background:#1a1b2e;min-height:620px;font-family:'Outfit',sans-serif;color:#c0caf5;position:relative;overflow:hidden}
+  .tn-noise{position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");opacity:0.4;pointer-events:none;z-index:0}
+  .tn-titlebar{background:#13141f;border-bottom:1px solid #24253a;padding:7px 14px;display:flex;align-items:center;gap:10px;position:relative;z-index:2}
+  .dot{width:11px;height:11px;border-radius:50%}
+  .dot-r{background:#f7768e;box-shadow:0 0 6px #f7768e66}
+  .dot-y{background:#e0af68;box-shadow:0 0 6px #e0af6866}
+  .dot-g{background:#9ece6a;box-shadow:0 0 6px #9ece6a66}
+  .tn-path{font-family:'JetBrains Mono',monospace;font-size:11px;color:#565f89;margin-left:6px;flex:1}
+  .tn-path span{color:#9ece6a}
+  .tn-clock{font-family:'JetBrains Mono',monospace;font-size:11px;color:#7aa2f7}
+  .tn-body{display:flex;height:565px;position:relative;z-index:1}
+  .tn-sidebar{width:200px;background:#13141f;border-right:1px solid #24253a;padding:14px 0;flex-shrink:0;overflow-y:auto}
+  .tn-sb-label{font-family:'JetBrains Mono',monospace;font-size:9px;color:#3d4466;letter-spacing:3px;text-transform:uppercase;padding:0 14px 10px}
+  .tn-bm{display:flex;align-items:center;gap:8px;padding:7px 14px;font-size:12px;color:#7982a9;cursor:pointer;border-left:2px solid transparent;text-decoration:none;transition:all 0.12s}
+  .tn-bm:hover{background:rgba(122,162,247,0.07);color:#c0caf5;border-left-color:#7aa2f7}
+  .tn-bm-dot{width:4px;height:4px;border-radius:50%;background:#3d4466;flex-shrink:0;transition:background 0.12s}
+  .tn-bm:hover .tn-bm-dot{background:#7aa2f7;box-shadow:0 0 4px #7aa2f7}
+  .tn-sep{height:1px;background:#24253a;margin:10px 14px}
+  .tn-ws-item{font-family:'JetBrains Mono',monospace;font-size:10px;padding:5px 14px;color:#3d4466;border-left:2px solid transparent}
+  .tn-ws-item.active{color:#9ece6a;border-left-color:#9ece6a;background:rgba(158,206,106,0.06)}
+  .tn-main{flex:1;padding:16px 20px;overflow-y:auto;display:flex;flex-direction:column;gap:14px}
+  .tn-toprow{display:flex;align-items:center;gap:10px}
+  .tn-prompt{font-family:'JetBrains Mono',monospace;font-size:14px;color:#bb9af7;font-weight:700}
+  .tn-search{flex:1;max-width:300px;background:#13141f;border:1px solid #24253a;border-radius:5px;padding:7px 12px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#c0caf5;outline:none;transition:border-color 0.15s,box-shadow 0.15s}
+  .tn-search:focus{border-color:#7aa2f7;box-shadow:0 0 0 3px rgba(122,162,247,0.1)}
+  .tn-search::placeholder{color:#3d4466}
+  .tn-sec{font-family:'JetBrains Mono',monospace;font-size:9px;color:#3d4466;letter-spacing:3px;text-transform:uppercase;display:flex;align-items:center;gap:8px}
+  .tn-sec::after{content:'';flex:1;height:1px;background:#24253a}
+  .tn-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:10px}
+
+  /* THE CARD */
+  .tn-card{background:#1e2035;border:1px solid #2a2c42;border-radius:10px;padding:14px;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s,border-color 0.15s;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:10px}
+  .tn-card::after{content:'';position:absolute;inset:0;opacity:0;transition:opacity 0.2s;border-radius:10px}
+  .tn-card:hover{transform:translateY(-3px)}
+
+  /* Accent line top */
+  .tn-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:10px 10px 0 0;opacity:0.85}
+
+  /* Category color variants */
+  .c-blue::before{background:linear-gradient(90deg,#7aa2f7,#2ac3de)}
+  .c-purple::before{background:linear-gradient(90deg,#bb9af7,#7aa2f7)}
+  .c-teal::before{background:linear-gradient(90deg,#73daca,#9ece6a)}
+  .c-rose::before{background:linear-gradient(90deg,#f7768e,#ff9e64)}
+  .c-amber::before{background:linear-gradient(90deg,#e0af68,#ff9e64)}
+
+  .c-blue:hover{border-color:#7aa2f7;box-shadow:0 8px 24px rgba(122,162,247,0.12),0 0 0 1px rgba(122,162,247,0.15)}
+  .c-purple:hover{border-color:#bb9af7;box-shadow:0 8px 24px rgba(187,154,247,0.12),0 0 0 1px rgba(187,154,247,0.15)}
+  .c-teal:hover{border-color:#73daca;box-shadow:0 8px 24px rgba(115,218,202,0.12),0 0 0 1px rgba(115,218,202,0.15)}
+  .c-rose:hover{border-color:#f7768e;box-shadow:0 8px 24px rgba(247,118,142,0.12),0 0 0 1px rgba(247,118,142,0.15)}
+  .c-amber:hover{border-color:#e0af68;box-shadow:0 8px 24px rgba(224,175,104,0.12),0 0 0 1px rgba(224,175,104,0.15)}
+
+  .tn-card-head{display:flex;align-items:flex-start;justify-content:space-between}
+  .tn-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+  .c-blue .tn-icon{background:rgba(122,162,247,0.12);color:#7aa2f7}
+  .c-purple .tn-icon{background:rgba(187,154,247,0.12);color:#bb9af7}
+  .c-teal .tn-icon{background:rgba(115,218,202,0.12);color:#73daca}
+  .c-rose .tn-icon{background:rgba(247,118,142,0.12);color:#f7768e}
+  .c-amber .tn-icon{background:rgba(224,175,104,0.12);color:#e0af68}
+
+  .tn-badge{font-family:'JetBrains Mono',monospace;font-size:8px;padding:3px 7px;border-radius:4px;letter-spacing:1px;text-transform:uppercase;font-weight:700}
+  .c-blue .tn-badge{background:rgba(122,162,247,0.12);color:#7aa2f7;border:1px solid rgba(122,162,247,0.2)}
+  .c-purple .tn-badge{background:rgba(187,154,247,0.12);color:#bb9af7;border:1px solid rgba(187,154,247,0.2)}
+  .c-teal .tn-badge{background:rgba(115,218,202,0.12);color:#73daca;border:1px solid rgba(115,218,202,0.2)}
+  .c-rose .tn-badge{background:rgba(247,118,142,0.12);color:#f7768e;border:1px solid rgba(247,118,142,0.2)}
+  .c-amber .tn-badge{background:rgba(224,175,104,0.12);color:#e0af68;border:1px solid rgba(224,175,104,0.2)}
+
+  .tn-card-title{font-size:13px;font-weight:700;color:#cdd6f4;letter-spacing:-0.2px;line-height:1.3}
+  .tn-card-desc{font-size:11px;color:#565f89;line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex:1}
+  .tn-card-foot{display:flex;align-items:center;gap:5px;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.5px;opacity:0;transform:translateY(3px);transition:opacity 0.15s,transform 0.15s}
+  .tn-card:hover .tn-card-foot{opacity:1;transform:translateY(0)}
+  .c-blue .tn-card-foot{color:#7aa2f7}
+  .c-purple .tn-card-foot{color:#bb9af7}
+  .c-teal .tn-card-foot{color:#73daca}
+  .c-rose .tn-card-foot{color:#f7768e}
+  .c-amber .tn-card-foot{color:#e0af68}
+
+  .tn-statusbar{background:#7aa2f7;padding:3px 14px;display:flex;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#13141f;position:relative;z-index:2}
+  .tn-sb-pill{background:rgba(0,0,0,0.2);padding:1px 8px;border-radius:3px;font-weight:700}
+  .tn-sb-r{margin-left:auto;display:flex;gap:10px;opacity:0.75}
+  .tn-empty{font-family:'JetBrains Mono',monospace;font-size:12px;color:#3d4466;padding:40px;text-align:center;grid-column:1/-1}
+  .tn-cur{display:inline-block;width:7px;height:13px;background:#7aa2f7;animation:blink 1s step-end infinite;vertical-align:middle;margin-left:2px}
   @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
-  .tn-statusbar{background:#7aa2f7;padding:2px 12px;display:flex;align-items:center;gap:12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#1a1b2e;position:relative;z-index:2}
-  .tn-statusbar-seg{padding:2px 8px;background:rgba(0,0,0,0.15);border-radius:2px}
-  .tn-statusbar-sep{opacity:0.4}
-  .tn-sb-right{margin-left:auto;display:flex;gap:8px}
 </style>
-<div class="tn-root">
-  <div class="tn-scanlines"></div>
-  <div class="tn-bar">
-    <div class="tn-dot r"></div><div class="tn-dot y"></div><div class="tn-dot g"></div>
-    <span class="tn-bar-title">rofi@arch  ~/dashboard  [hyprland]</span>
-    <span class="tn-bar-time" id="tn-clock">00:00</span>
+
+<div class="tn">
+  <div class="tn-noise"></div>
+  <div class="tn-titlebar">
+    <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+    <span class="tn-path"><span>rofi</span>@arch <span>~/dashboard</span> [hyprland]</span>
+    <span class="tn-clock" id="clk">00:00:00</span>
   </div>
   <div class="tn-body">
     <div class="tn-sidebar">
-      <div class="tn-sidebar-header">bookmarks</div>
-      <div id="tn-bm-list"><div class="tn-bm-item"><div class="tn-bm-dot"></div><span style="color:#565f89;font-family:'JetBrains Mono',monospace;font-size:11px">loading...</span></div></div>
-      <div class="tn-sidebar-sep"></div>
-      <div style="padding:8px 16px">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#565f89;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px">workspace</div>
-        <div style="display:flex;flex-direction:column;gap:4px">
-          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#9ece6a;padding:4px 8px;background:rgba(158,206,106,0.08);border-radius:4px;border-left:2px solid #9ece6a">1 : dashboard</div>
-          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#565f89;padding:4px 8px;border-radius:4px;border-left:2px solid transparent">2 : terminal</div>
-          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#565f89;padding:4px 8px;border-radius:4px;border-left:2px solid transparent">3 : browser</div>
-        </div>
-      </div>
+      <div class="tn-sb-label">bookmarks</div>
+      <div id="bm-list"><div class="tn-bm"><div class="tn-bm-dot"></div><span>loading<span class="tn-cur"></span></span></div></div>
+      <div class="tn-sep"></div>
+      <div class="tn-sb-label">workspace</div>
+      <div class="tn-ws-item active">1 › dashboard</div>
+      <div class="tn-ws-item">2 › terminal</div>
+      <div class="tn-ws-item">3 › browser</div>
+      <div class="tn-ws-item">4 › neovim</div>
     </div>
     <div class="tn-main">
-      <div class="tn-topbar">
+      <div class="tn-toprow">
         <span class="tn-prompt">❯</span>
-        <input class="tn-search" id="tn-search" placeholder="search apps..." />
+        <input class="tn-search" id="srch" placeholder="search apps..." />
       </div>
-      <div class="tn-section-label">projects</div>
-      <div class="tn-grid" id="tn-grid">
-        <div class="tn-loading">fetching nodes<span class="tn-cursor"></span></div>
+      <div class="tn-sec">projects</div>
+      <div class="tn-grid" id="grid">
+        <div class="tn-empty">fetching nodes<span class="tn-cur"></span></div>
       </div>
     </div>
   </div>
   <div class="tn-statusbar">
-    <span class="tn-statusbar-seg">NORMAL</span>
-    <span class="tn-statusbar-sep">|</span>
+    <span class="tn-sb-pill">NORMAL</span>
     <span>dashboard.html</span>
-    <span class="tn-statusbar-sep">|</span>
-    <span id="tn-count">0 apps</span>
-    <div class="tn-sb-right">
-      <span>Tokyo Night</span>
-      <span class="tn-statusbar-sep">|</span>
-      <span>UTF-8</span>
-    </div>
+    <span>·</span>
+    <span id="cnt">0 apps</span>
+    <div class="tn-sb-r"><span>Tokyo Night</span><span>·</span><span>UTF-8</span><span>·</span><span>LF</span></div>
   </div>
 </div>
+
 <script>
-const GAS_URL = "https://script.google.com/macros/s/AKfycbyDNzy0wf5MxcafkRuAW1icXq5oKdUPMM9Lfxy_U5CsGtQ7luBPZcdYss4ItWXrQBNE/exec";
-const catMap = ['','cat-a','cat-b','cat-c','cat-d'];
-const icons = ['<i class="ti ti-external-link"></i>','<i class="ti ti-box"></i>','<i class="ti ti-chart-bar"></i>','<i class="ti ti-device-mobile"></i>','<i class="ti ti-terminal"></i>'];
-let allProjects = [];
+const GAS="https://script.google.com/macros/s/AKfycbyDNzy0wf5MxcafkRuAW1icXq5oKdUPMM9Lfxy_U5CsGtQ7luBPZcdYss4ItWXrQBNE/exec";
+let all=[];
 
-function updateClock(){
-  const d = new Date();
-  document.getElementById('tn-clock').textContent = d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+setInterval(()=>{
+  const d=new Date();
+  document.getElementById('clk').textContent=d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+},1000);
+
+function catColor(cat,i){
+  if(!cat) return ['c-blue','c-purple','c-teal','c-rose','c-amber'][i%5];
+  const c=cat.toLowerCase();
+  if(c.includes('mao')||c.includes('business')) return 'c-amber';
+  if(c.includes('webapp')||c.includes('web')) return ['c-blue','c-purple','c-teal'][i%3];
+  if(c.includes('mobile')) return 'c-rose';
+  if(c.includes('misc')) return 'c-teal';
+  return ['c-blue','c-purple','c-teal','c-rose','c-amber'][i%5];
 }
-setInterval(updateClock,1000);updateClock();
 
-async function fetchData(){
+function catIcon(cat,title){
+  if(!cat&&!title) return 'ti-apps';
+  const s=(cat+title).toLowerCase();
+  if(s.includes('tracker')||s.includes('baby')) return 'ti-baby-carriage';
+  if(s.includes('dashboard')||s.includes('chart')) return 'ti-chart-bar';
+  if(s.includes('tiktok')||s.includes('social')) return 'ti-brand-tiktok';
+  if(s.includes('mao')||s.includes('setoran')||s.includes('wonton')||s.includes('tempura')) return 'ti-bowl';
+  if(s.includes('diary')||s.includes('life')) return 'ti-notebook';
+  if(s.includes('notes')||s.includes('note')) return 'ti-note';
+  if(s.includes('mp4')||s.includes('video')) return 'ti-video';
+  if(s.includes('music')||s.includes('murottal')) return 'ti-music';
+  if(s.includes('report')) return 'ti-report';
+  if(s.includes('pekerjaan')||s.includes('task')||s.includes('job')) return 'ti-briefcase';
+  if(s.includes('bridge')||s.includes('iphone')) return 'ti-device-mobile';
+  if(s.includes('bot')||s.includes('ai')) return 'ti-robot';
+  if(s.includes('github')) return 'ti-brand-github';
+  if(s.includes('youtube')) return 'ti-brand-youtube';
+  return 'ti-apps';
+}
+
+function render(projects){
+  const grid=document.getElementById('grid');
+  document.getElementById('cnt').textContent=projects.length+' apps';
+  if(!projects.length){grid.innerHTML='<div class="tn-empty">no results found</div>';return;}
+  grid.innerHTML=projects.map((p,i)=>{
+    const col=catColor(p.category,i);
+    const ico=catIcon(p.category||'',p.title||'');
+    return `<div class="tn-card ${col}" onclick="window.open('${p.url}','_blank')">
+      <div class="tn-card-head">
+        <div class="tn-icon"><i class="ti ${ico}"></i></div>
+        <span class="tn-badge">${p.category||'misc'}</span>
+      </div>
+      <div>
+        <div class="tn-card-title">${p.title}</div>
+        <div class="tn-card-desc">${p.description||'—'}</div>
+      </div>
+      <div class="tn-card-foot"><i class="ti ti-arrow-right" style="font-size:11px"></i> open app</div>
+    </div>`;
+  }).join('');
+}
+
+function renderBm(bms){
+  const el=document.getElementById('bm-list');
+  if(!bms.length){el.innerHTML='<div class="tn-bm"><div class="tn-bm-dot"></div><span style="color:#3d4466">empty</span></div>';return;}
+  el.innerHTML=bms.map(b=>`<a class="tn-bm" href="${b.url}" target="_blank"><div class="tn-bm-dot"></div><span>${b.title}</span></a>`).join('');
+}
+
+async function init(){
   try{
-    const r = await fetch(GAS_URL);
-    const d = await r.json();
-    allProjects = d.projects||[];
-    renderProjects(allProjects);
-    renderBookmarks(d.bookmarks||[]);
+    const r=await fetch(GAS);
+    const d=await r.json();
+    all=d.projects||[];
+    render(all);
+    renderBm(d.bookmarks||[]);
   }catch(e){
-    document.getElementById('tn-grid').innerHTML='<div class="tn-loading" style="color:#f7768e">Error: connection refused</div>';
+    document.getElementById('grid').innerHTML='<div class="tn-empty" style="color:#f7768e">error: connection refused</div>';
   }
 }
 
-function catIndex(cat,i){
-  if(!cat) return (i%4)+1;
-  const cats=['automation','dashboard','mobile','system','web'];
-  const idx = cats.findIndex(c=>cat.toLowerCase().includes(c));
-  return idx>=0?idx+1:(i%4)+1;
-}
-
-function renderProjects(projects){
-  const grid = document.getElementById('tn-grid');
-  if(!projects.length){grid.innerHTML='<div class="tn-loading">no results found</div>';return;}
-  document.getElementById('tn-count').textContent = projects.length+' apps';
-  grid.innerHTML = projects.map((p,i)=>{
-    const ci = catIndex(p.category,i);
-    const ic = icons[ci-1]||icons[0];
-    return `<div class="tn-card cat-${['','a','b','c','d'][ci]}" onclick="window.open('${p.url}','_blank')">
-      <div class="tn-card-top">
-        <div class="tn-card-icon">${ic}</div>
-        <span class="tn-badge">${p.category||'misc'}</span>
-      </div>
-      <div class="tn-card-title">${p.title}</div>
-      <div class="tn-card-desc">${p.description||'—'}</div>
-      <div class="tn-card-footer"><i class="ti ti-terminal-2" style="font-size:12px"></i>&nbsp;open&nbsp;→</div>
-    </div>`;
-  }).join('');
-  if(window.lucide) lucide.createIcons();
-}
-
-function renderBookmarks(bms){
-  const list = document.getElementById('tn-bm-list');
-  if(!bms.length){list.innerHTML='<div class="tn-bm-item"><div class="tn-bm-dot"></div><span style="color:#565f89;font-size:11px;font-family:JetBrains Mono,monospace">empty</span></div>';return;}
-  list.innerHTML = bms.map(bm=>`<a href="${bm.url}" target="_blank" style="text-decoration:none"><div class="tn-bm-item"><div class="tn-bm-dot"></div><span style="font-size:12px">${bm.title}</span></div></a>`).join('');
-}
-
-document.getElementById('tn-search').addEventListener('input',e=>{
-  const q = e.target.value.toLowerCase();
-  const filtered = allProjects.filter(p=>p.title.toLowerCase().includes(q)||(p.description||'').toLowerCase().includes(q));
-  renderProjects(filtered);
+document.getElementById('srch').addEventListener('input',e=>{
+  const q=e.target.value.toLowerCase();
+  render(all.filter(p=>(p.title+' '+(p.description||'')).toLowerCase().includes(q)));
 });
 
-fetchData();
+init();
 </script>
